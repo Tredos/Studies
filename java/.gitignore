@@ -28,7 +28,7 @@ target/
 # Files that might appear on external disk
 .Spotlight-V100
 .Trashes
- 
+
  
 ######################
 # Eclipse
@@ -37,6 +37,7 @@ target/
 *.pydevproject
 .project
 .metadata
+.recommenders/**
 bin/**
 tmp/**
 tmp/**/*
