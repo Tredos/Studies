@@ -1,9 +1,10 @@
 __author__ = 'bartek'
 import myIos
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import math
 import types
-
+import numpy as np
+import scipy.stats as stats
 pointsDict = []
 xpoints = []
 ypoints = []
@@ -47,89 +48,64 @@ class Node:
     def setGroup(self,group):
         assert isinstance(group, int)
         self.group = group
-#plot data from list of lists
 
+#plot data from list of lists
 def plotData(data):
     for value in data:
         xpoints.append(value[0])
         ypoints.append(value[1])
 
-#   plt.plot(xpoints, ypoints, 'ro')
-#    plt.show()
+
 
 #main function of the program
-def kmeans(nbCenters, nodesList):
-    centers = []
-    ## Creation the ditionary holding the centers
-    for i in range(0, nbCenters):
-        center = Node([])
-        assert isinstance(center, Node)
-        center.__dict__ = nodesList[i].__dict__.copy()
-        center.setGroup(i)
-        centers.append(center)
-
-
+def kmeans( nodesList, centers):
+    nbCenters = len(centers)
 
     ##assigning nodes to the groups on base of distance to centers
     for i in range(10):
+        #plotDataset(nodesList,centers)
         assignNodesToGroups(nodesList,centers)
         allGroups = separeteGroups(nodesList,nbCenters)
         centers = countCenters(allGroups)
-        str = '[ '
-        for i in centers:
-                str += i.__str__()
-        str += ']'
-        print str
+
+    return allGroups, centers
+        # str = '[ '
+        # for i in centers:
+        #         str += i.__str__()
+        # str += ']'
+        # print str
 
     ##------------------------------------Count the centers---------------------------------------
 
     #separete general list to sublists of groups
 
+def plotDataset(nodesList,centers):
+#---------------------Plot-------------------------
+    ##plot nodes before changes
 
-# #---------------------Plot-------------------------
-#     ##plot nodes before changes
-#     xpoints = []
-#     ypoints =[]
-#     for nodes in nodesList:
-#         xpoints.append(nodes.x)
-#         ypoints.append(nodes.y)
-#     plt.plot(xpoints,ypoints,'bo',)
-#
-#     #plot centers
-#     xpoints =[]
-#     ypoints = []
-#     for key,value in centers.items():
-#         print str(key) + ' ' + str(value) #calculate centers
-#         assert isinstance(value,Node)
-#         xpoints.append(value.x)
-#         ypoints.append(value.y)
-#
-#     plt.plot(xpoints,ypoints,'ro')
-#     plt.show()
-#
-#     #---------------------Plot-------------------------
-#     ##plot nodes before changes
-#     xpoints = []
-#     ypoints =[]
-#     for nodes in nodesList:
-#         xpoints.append(nodes.x)
-#         ypoints.append(nodes.y)
-#     plt.plot(xpoints,ypoints,'bo',)
-#
-#     #plot centers
-#     xpoints =[]
-#     ypoints = []
-#     for key,value in centers.items():
-#         print str(key) + ' ' + str(value) #calculate centers
-#         assert isinstance(value,Node)
-#         xpoints.append(value.x)
-#         ypoints.append(value.y)
-#
-#     plt.plot(xpoints,ypoints,'ro')
-#     plt.show()
-#
-#
 
+    colors = np.linspace(0,1,len(centers))
+
+    for i in range(len(centers)):
+        xpoints = []
+        ypoints =[]
+        for nodes in nodesList:
+            assert isinstance(nodes,Node)
+            if nodes.group == centers[i].group:
+                xpoints.append(nodes.values[0])
+                ypoints.append(nodes.values[1])
+        plt.plot(xpoints,ypoints,'o',color = plt.cm.jet(colors[i]))
+
+    #plot centers
+    xpoints =[]
+    ypoints = []
+    for nodes in centers:
+        assert isinstance(nodes,Node)
+        xpoints.append(nodes.values[0])
+        ypoints.append(nodes.values[1])
+
+    plt.plot(xpoints,ypoints,'o', color = '0.75')
+    plt.show()
 
     ## count the averahe centers of the groups
 
@@ -179,9 +155,65 @@ def getListOfNodes(data):
         nodesList.append(node1)
     return nodesList
 
+def plotHistogram(x):
+    n, bins, patches = plt.hist(x, 100, normed=1, histtype='stepfilled')
+    plt.setp(patches, 'facecolor', 'g', 'alpha', 0.75)
+    plt.show()
+
 
 data = myIos.read_data('out.csv')
 nodesList = getListOfNodes(data)
+centers = []
+center = Node([])
+for i in range(0, 1):
+    center = Node([])
+    assert isinstance(center, Node)
+    center.__dict__ = nodesList[i].__dict__.copy()
+    center.setGroup(i)
+    centers.append(center)
 
-kmeans(5, nodesList)
+allGroups, centers = kmeans(nodesList,centers)
+## check if gaussian distribution
 
+## TODO  check if distribution is gaussian, if yes seperate the center into two and run k-means again
+## TODO if every is gaussian end
+for group in allGroups:
+    pointMatrix = []
+    for node in group:
+        assert isinstance(node,Node)
+        centerNode = centers[node.group]
+        point = centerNode.getDistance(node)
+        pointMatrix.append(point)
+    plotHistogram(pointMatrix)
+    gauss = stats.normaltest(pointMatrix)
+    if gauss[1] < 0.1:
+        ##separete the center to two and check if it is better
+        centers.remove(centerNode)
+        newCenter1 = Node([])
+        newCenter2 = Node([])
+        newCenter1.__dict__ = centerNode.__dict__.copy()
+        newCenter2.__dict__ = centerNode.__dict__.copy()
+        newCenter1.setValues([newCenter1.getValues()[0] + 0.01, newCenter1.getValues()[1] + 0.01 ])
+        newCenter2.setValues([newCenter2.getValues()[0] + 0.01, newCenter2.getValues()[1] + 0.01 ])
+        centers.append(newCenter1)
+        centers.append(newCenter2)
+
+plotDataset(nodesList,centers)
+
+### begin with one center
+##do kmeans with one center
+##check distribution
+## separete to two centers
+##check if result is better
+##if yes keep them
+##if not delete them and go back
+#kmeans(nodesList)
+
+# ## to be used
+#         ## Creation the list holding the centers
+#     for i in range(0, nbCenters):
+#         center = Node([])
+#         assert isinstance(center, Node)
+#         center.__dict__ = nodesList[i].__dict__.copy()
+#         center.setGroup(i)
+#         centers.append(center)

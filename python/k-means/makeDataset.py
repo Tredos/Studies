@@ -1,5 +1,5 @@
 __author__ = 'bartek'
-import ios
+
 import myIos
 import matplotlib.pyplot as plt
 data = []

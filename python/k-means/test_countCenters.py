@@ -10,7 +10,6 @@ def TestCountCenters(self, TestCase):
     allgroups = [nodes, nodes]
     centers  = mn.countCenters(allgroups)
     for i in centers:
-    assert isinstance(i, mn.Node)
-assert iseqal
+        assert isinstance(i, mn.Node)
 
-  pass
+    pass
