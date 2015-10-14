@@ -84,7 +84,7 @@ def genRandomGaussianGroups(nbNodes, nbGroups, nbAttributes =2):
     for i in range(nbGroups):
         center_x = random.random()
         center_y = random.random()
-        sigma = float(random.randrange(8,15))/100
+        sigma = float(random.randrange(8,10))/100
         print 'center_x = ' + str(center_x) + ' center_y = ' + str(center_y) + ' sigma = '+str(sigma)
         for j in range( int(nbNodes/nbGroups)):
             point_x = random.gauss(center_x,sigma)

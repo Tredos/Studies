@@ -5,41 +5,42 @@ import matplotlib.pyplot as plt
 data = []
 xpoints = []
 ypoints = []
-
-def save(Filename = 'out.csv' ):
-    global data
+data = []
+def save(data, Filename = 'out.csv' ):
     myIos.write_data(data, Filename)
     return True
 
 
 def plotData(data):
-
+    xpoints = []
+    ypoints = []
     for value in data:
         xpoints.append(value[0])
         ypoints.append(value[1])
 
-    plt.plot(xpoints,ypoints,'ro')
-    plt.show()
+    a = plt.Figure()
 
+    plt.plot(xpoints,ypoints,'ro',ms = 0.4)
+    plt.show()
+    plt.close("all")
 def generate():
-    global data
-    data = myIos.genRandomGaussianGroups(500,5)
+    data = myIos.genRandomGaussianGroups(5000,5)
     plotData(data)
+    return data
 
 def plotSaved():
     data = myIos.read_data('out.csv')
     plotData(data)
 
-
 def joe():
     print 'bwanakubwa'
 
 def menu(argument):
-
+    global data
     if argument =='s':
-        save()
+        save(data)
     elif argument =='n':
-        generate()
+        data = generate()
     elif argument == 'p':
         plotSaved()
     elif argument == 'k':
