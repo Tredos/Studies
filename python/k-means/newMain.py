@@ -1,6 +1,7 @@
 __author__ = 'bartek'
 import myIos
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import math
 import types
 import numpy as np
@@ -55,6 +56,46 @@ class Node:
         assert isinstance(group, int)
         self.group = group
 #plot data from list of lists
+def plotDataset3D(nodesList, centers):
+    colors = np.linspace(0, 1, len(centers))
+    groups = []
+    nbGroups = 0
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for node in nodesList:
+        assert isinstance(node,Node)
+        try:
+            groups.index(node.getGroup())
+        except ValueError:
+            groups.append(node.getGroup())
+            nbGroups +=1
+    colors = np.linspace(0, 1, nbGroups)
+    for i in range(nbGroups):
+        xpoints = []
+        ypoints = []
+        zpoints = []
+        for nodes in nodesList:
+            assert isinstance(nodes, Node)
+            if nodes.group == groups[i]:
+                xpoints.append(nodes.values[0])
+                ypoints.append(nodes.values[1])
+                zpoints.append(nodes.values[2])
+        plt.scatter(xpoints, ypoints, zs = zpoints, zdir=u'z', s=20, c=plt.cm.jet(colors[i]), depthshade=True)
+
+    # plot centers
+    xpoints = []
+    ypoints = []
+    zpoints = []
+    for nodes in centers:
+        assert isinstance(nodes, Node)
+        xpoints.append(nodes.values[0])
+        ypoints.append(nodes.values[1])
+        zpoints.append(nodes.values[2])
+        i = nodes.getGroup()
+        plt.scatter(xpoints, ypoints, zs = zpoints, zdir=u'z', s=100, c=plt.cm.jet(colors[i]), depthshade=False, marker ='^')
+        plt.xlabel(" x ")
+        plt.ylabel("y")
+    plt.show()
 
 def plotDataset(nodesList, centers):
 
@@ -106,6 +147,8 @@ def kmeans(nbCenters, nodesList):
         centers = countCenters(allGroups)
         if len(centers[0].getValues()) ==2:
             plotDataset(nodesList,centers)
+        elif len(centers[0].getValues()) ==3:
+            plotDataset3D(nodesList,centers)
 
 def assignNodesToGroups(nodesList, centers):
 
@@ -171,7 +214,7 @@ def readIrisData(filename, skip_first_line = False, ignore_first_column = False,
     return data
 
 def mainFunc():
-    data = readIrisData('iris.csv',)
+    data = readIrisData('iris.csv',bounds = [0,3])
 
     print data
     nodesList = getListOfNodes(data)
@@ -179,8 +222,13 @@ def mainFunc():
     #     print d
     # print "-----------------------------------------------------------------------------"
     kmeans(3, nodesList)
+    index = 0
     for d in nodesList:
+
+        if index%50 ==0:
+            print "-------------------------------------"
         print d
+        index +=1
     print len(nodesList)
     nbOnes= 0
     nbTwos = 0
