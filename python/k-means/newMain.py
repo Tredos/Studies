@@ -1,14 +1,13 @@
 __author__ = 'bartek'
 import myIos
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import math
 import types
+import numpy as np
 
 pointsDict = []
-xpoints = []
-ypoints = []
-x =0
-y =1
+
+
 ### class of nodes containing neeeded data, has to change to a list
 class Node:
     def __init__(self,list, group =None):
@@ -49,13 +48,37 @@ class Node:
         self.group = group
 #plot data from list of lists
 
-def plotData(data):
-    for value in data:
-        xpoints.append(value[0])
-        ypoints.append(value[1])
+def plotDataset(nodesList, centers):
 
-#   plt.plot(xpoints, ypoints, 'ro')
-#    plt.show()
+    groups = []
+    nbGroups = 0
+    for node in nodesList:
+        assert isinstance(node,Node)
+        try:
+            groups.index(node.getGroup())
+        except ValueError:
+            groups.append(node.getGroup())
+            nbGroups +=1
+    colors = np.linspace(0, 1, nbGroups)
+    for i in range(nbGroups):
+        xpoints = []
+        ypoints = []
+        for nodes in nodesList:
+            assert isinstance(nodes, Node)
+            if nodes.group == groups[i]:
+                xpoints.append(nodes.values[0])
+                ypoints.append(nodes.values[1])
+        plt.plot(xpoints, ypoints, 'o', color=plt.cm.jet(colors[i]), ms=3)
+
+    # plot centers
+    xpoints = []
+    ypoints = []
+    for nodes in centers:
+        assert isinstance(nodes, Node)
+        xpoints.append(nodes.values[0])
+        ypoints.append(nodes.values[1])
+    plt.plot(xpoints, ypoints, 'o', color='0', ms=10)
+    plt.show()
 
 #main function of the program
 def kmeans(nbCenters, nodesList):
@@ -68,70 +91,17 @@ def kmeans(nbCenters, nodesList):
         center.setGroup(i)
         centers.append(center)
 
-
-
     ##assigning nodes to the groups on base of distance to centers
     for i in range(10):
         assignNodesToGroups(nodesList,centers)
         allGroups = separeteGroups(nodesList,nbCenters)
         centers = countCenters(allGroups)
+        plotDataset(nodesList,centers)
         str = '[ '
         for i in centers:
                 str += i.__str__()
         str += ']'
         print str
-
-    ##------------------------------------Count the centers---------------------------------------
-
-    #separete general list to sublists of groups
-
-
-# #---------------------Plot-------------------------
-#     ##plot nodes before changes
-#     xpoints = []
-#     ypoints =[]
-#     for nodes in nodesList:
-#         xpoints.append(nodes.x)
-#         ypoints.append(nodes.y)
-#     plt.plot(xpoints,ypoints,'bo',)
-#
-#     #plot centers
-#     xpoints =[]
-#     ypoints = []
-#     for key,value in centers.items():
-#         print str(key) + ' ' + str(value) #calculate centers
-#         assert isinstance(value,Node)
-#         xpoints.append(value.x)
-#         ypoints.append(value.y)
-#
-#     plt.plot(xpoints,ypoints,'ro')
-#     plt.show()
-#
-#     #---------------------Plot-------------------------
-#     ##plot nodes before changes
-#     xpoints = []
-#     ypoints =[]
-#     for nodes in nodesList:
-#         xpoints.append(nodes.x)
-#         ypoints.append(nodes.y)
-#     plt.plot(xpoints,ypoints,'bo',)
-#
-#     #plot centers
-#     xpoints =[]
-#     ypoints = []
-#     for key,value in centers.items():
-#         print str(key) + ' ' + str(value) #calculate centers
-#         assert isinstance(value,Node)
-#         xpoints.append(value.x)
-#         ypoints.append(value.y)
-#
-#     plt.plot(xpoints,ypoints,'ro')
-#     plt.show()
-#
-#
-
-
-    ## count the averahe centers of the groups
 
 def assignNodesToGroups(nodesList, centers):
 
@@ -158,7 +128,6 @@ def separeteGroups(nodesList,nbCenters):
     return allGroups
 def countCenters(allGroups):
     centers = []
-
     for list in allGroups:
         averages = [0] *len(list[0].values)
         for nodes in list:
@@ -179,9 +148,7 @@ def getListOfNodes(data):
         nodesList.append(node1)
     return nodesList
 
-
 data = myIos.read_data('out.csv')
 nodesList = getListOfNodes(data)
 
-kmeans(5, nodesList)
-
+kmeans(4, nodesList)
