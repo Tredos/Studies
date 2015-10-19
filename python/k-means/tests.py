@@ -2,6 +2,8 @@ import newMain as mn
 node = mn.Node([2,3,1])
 print node.getValues()
 print node.getValues(2)
+
+
 #                 a = [0,1,2]
 # print a[0]
 # one = mn.Node([1,2,3])
