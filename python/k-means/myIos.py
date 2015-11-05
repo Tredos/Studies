@@ -2,7 +2,7 @@
 
 import random
 import sys
-
+import math
 def read_data(filename, skip_first_line = False, ignore_first_column = False):
     '''
     Loads data from a csv file and returns the corresponding list.
@@ -78,18 +78,21 @@ def generate_random_data(nb_objs, nb_attrs, frand = random.gauss):
         line = [i+1] + map(lambda x: frand(), range(nb_attrs))
         data.append(line)
     return(data)
-
+# Generates *nbGroups*
 def genRandomGaussianGroups(nbNodes, nbGroups, nbAttributes =2):
-    data =[]
+    data =[]        #list whch will be returned
+    center = []     #list containing centers around which the data will be generated
+
     for i in range(nbGroups):
-        center_x = random.random()
-        center_y = random.random()
-        sigma = float(random.randrange(8,15))/100
-        print 'center_x = ' + str(center_x) + ' center_y = ' + str(center_y) + ' sigma = '+str(sigma)
-        for j in range( int(nbNodes/nbGroups)):
-            point_x = random.gauss(center_x,sigma)
-            poimt_y = random.gauss(center_y,sigma)
-            data.append([point_x,poimt_y])
+        for k in range(nbAttributes):
+            center.append(random.random()) # generate centers with given amount of parameters
+        sigma = float(random.randrange(8,15))/100 #generate the parameters of gaussian distribution around the centers
+        for j in range( int(nbNodes/nbGroups)):       #generate equal nb of points, as close as possible to desired number
+            point = []
+            for i in range(nbAttributes):
+                point.append(random.gauss(center[i],sigma))     # generate parameters for one point with gaussian distribution around value of center
+            data.append(point)                                  #add point to the data
+
     return data
 
 

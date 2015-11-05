@@ -2,8 +2,10 @@ package junit.bmiPerson;
 
 import java.util.Calendar;
 
-public class Person {
 
+public class Person {
+	
+	
 	public static final int MAX_ERSON_AGE = 150; 
 	public static final float MAX_HEIGHT = (float)200.75;
 	public static final float MIN_HEIGHT = 35;
@@ -22,8 +24,8 @@ public class Person {
 		this.lastName = lastName;
 		
 		Calendar rightNow = Calendar.getInstance();
-		if (birthDay.after(rightNow) || (height <= MAX_HEIGHT && height>=MIN_HEIGHT) ||(weight <= MAX_WEIGHT && weight>=MIN_WEIGHT) ){
-			throw new Exception("BadParametersException");
+		if (birthDay.after(rightNow) || height >= MAX_HEIGHT || height<=MIN_HEIGHT || weight >= MAX_WEIGHT || weight<=MIN_WEIGHT ){
+			throw new BadParametersException("BadParametersException");
 		}
 		else{
 			this.birthDay = birthDay;

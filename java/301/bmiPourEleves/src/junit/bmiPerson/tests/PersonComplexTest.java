@@ -6,6 +6,7 @@ import java.util.Calendar;
 
 import org.junit.Test;
 
+import junit.bmiPerson.BadParametersException;
 import junit.bmiPerson.Person;
 
 public class PersonComplexTest {
@@ -24,60 +25,36 @@ public class PersonComplexTest {
 //	public void beforeTests(){
 //		rightNow.
 //	}
-	@Test
+	@Test(expected= BadParametersException.class)
 	public void testMinHeight() throws Exception {
 		Calendar rightNow = Calendar.getInstance();
-		try{
-			Person person = new Person("a","b", rightNow, (float)30.0, (float) 1.5);
-		}catch( Exception e){
-			assertEquals("BadParametersException" , e);
-		}
-
+		Person person = new Person("a","b", rightNow, (float)30.0, (float) 1.5);
+		
 	}
+	@Test(expected = BadParametersException.class)
 	public void testMinWeight() throws Exception {
-
-		try{
-			Person person = new Person("a","b", rightNow, (float)50.0, (float) 0.5);
-		}catch( Exception e){
-			assertEquals("BadParametersException" , e);
-		}
-
+		Person person = new Person("a","b", rightNow, (float)50.0, (float) 0.5);
 	}
-	public void testMin() throws Exception {
+	@Test(expected = BadParametersException.class)
+	public void testMaxHeight() throws Exception {
 		Calendar rightNow = Calendar.getInstance();
-		try{
-			Person person = new Person("a","b", rightNow, (float)30.0, (float) 0.5);
-		}catch( Exception e){
-			assertEquals("BadParametersException" , e);
-		}
-
+		Person person = new Person("a","b", rightNow, (float)3000.0, (float) 0.5);
 	}
-	public void testMin() throws Exception {
+	@Test(expected = BadParametersException.class)
+	public void testMaxWeight() throws Exception {
 		Calendar rightNow = Calendar.getInstance();
-		try{
-			Person person = new Person("a","b", rightNow, (float)30.0, (float) 0.5);
-		}catch( Exception e){
-			assertEquals("BadParametersException" , e);
-		}
-
+		Person person = new Person("a","b", rightNow, (float)30.0, (float) 10000.0);
 	}
-	public void testMin() throws Exception {
-		Calendar rightNow = Calendar.getInstance();
-		try{
-			Person person = new Person("a","b", rightNow, (float)30.0, (float) 0.5);
-		}catch( Exception e){
-			assertEquals("BadParametersException" , e);
-		}
-
+	@Test(expected = BadParametersException.class)
+	public void testTimeAfterNow() throws Exception{
+		Calendar creation  = Calendar.getInstance();
+		creation.add(Calendar.HOUR,1);
+		Person person = new Person("a","b", creation, (float)30.0, (float) 10000.0);
 	}
-	public void testMin() throws Exception {
-		Calendar rightNow = Calendar.getInstance();
-		try{
-			Person person = new Person("a","b", rightNow, (float)30.0, (float) 0.5);
-		}catch( Exception e){
-			assertEquals("BadParametersException" , e);
-		}
-
+	@Test
+	public void allOk() throws Exception{
+		Calendar creation  = Calendar.getInstance();
+		Person person = new Person("a","b", creation, (float)150.0, (float) 10.0);
 	}
 
 }
